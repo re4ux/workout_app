@@ -11,7 +11,7 @@ class TimerScreen extends StatefulWidget {
 
 class _TimerScreenState extends State<TimerScreen> {
   int _time = 120; // 2 minutes
-  late Timer _timer;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -20,12 +20,15 @@ class _TimerScreenState extends State<TimerScreen> {
   }
 
   void _startTimer() {
+    if (_timer != null && _timer!.isActive) {
+      _timer!.cancel();
+    }
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_time > 0) {
           _time--;
         } else {
-          _timer.cancel();
+          _timer!.cancel();
           Vibration.vibrate();
         }
       });
@@ -34,7 +37,7 @@ class _TimerScreenState extends State<TimerScreen> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -51,6 +54,11 @@ class _TimerScreenState extends State<TimerScreen> {
             Text(
               '$_time',
               style: const TextStyle(fontSize: 48),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _startTimer,
+              child: const Text('Restart Timer'),
             ),
           ],
         ),
